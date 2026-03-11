@@ -8,6 +8,7 @@ import (
 type UserRepository interface {
 	GetUserByUsername(username string) (*models.User, error)
 	CreateUser(user *models.User) error
+	CreateCakeItem(item *models.CakeItem) error //added command
 }
 
 type UserRepo struct{}
@@ -31,3 +32,7 @@ func (r *UserRepo) CreateUser(user *models.User) error {
 	}
 	return nil
 }
+func (r *UserRepo) CreateCakeItem(item *models.CakeItem) error {
+    return db.DB.Create(item).Error // save cake order details 
+}
+

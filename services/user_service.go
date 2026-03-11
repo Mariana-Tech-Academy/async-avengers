@@ -12,6 +12,23 @@ type UserService struct {
 	Repo repository.UserRepository
 }
 
+func (s *UserService) SaveCakeInvoice(item *models.CakeItem) error {
+    // 1. Calculate base cost (Quantity * Unit Price)
+    subtotal := float64(item.Quantity) * item.UnitPrice
+
+    // 2. Add the Service Charge (delivery, rush, etc.)
+    amountBeforeTax := subtotal + item.ServiceCharge
+
+    // 3. Apply the Tax Rate
+    taxAmount := amountBeforeTax * (item.TaxRate / 100)
+
+    // 4. Set the final Total
+    item.Total = amountBeforeTax + taxAmount
+
+    // 5. Save to database using your repository
+    return s.Repo.CreateCakeItem(item) 
+}
+
 func (s *UserService) RegisterUser(req *models.User) error {
 
 	// Check if user already exists

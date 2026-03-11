@@ -39,6 +39,7 @@ type CakeItem struct {
     ServiceCharge float64 `json:"service_charge"` 
     TaxRate       float64 `json:"tax_rate"`
     Total         float64 `json:"total"`
+	UserID        uint    `json:"user_id"`
 }
 
 func (c *CakeItem) CalculateTotal() {
