@@ -43,6 +43,7 @@ type Client struct {
 type CakeItem struct {
 	gorm.Model
 	InvoiceID uint `json:"invoice_id"`
+	ClientID        uint    `json:"client_id"`
 
 	Size   string `json:"size"`   // in inches
 	Flavor string `json:"flavor"` // roughly 3/4
