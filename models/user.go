@@ -6,6 +6,8 @@ import (
 
 type User struct {
 	gorm.Model
+	Buisnessname  string  `json:"buisnessname"`
+    Buisnessaddress  string  `json:"buisnessaddress"`
 	Username string  `json:"username"`
 	Password string  `json:"password"`
 	Phone    string  `json:"phone"`
@@ -13,10 +15,11 @@ type User struct {
 	TaxID    string  `json:"tax_id"`
 	TaxRate  float64 `json:"tax_rate"`
 }
+
 type Invoice struct {
 	gorm.Model
 	Subtotal      float64 `json:"subtotal"`
-	ServiceCharge float64 `json:"service_charge"` // useffor delivery or rush orders
+	ServiceCharge float64 `json:"service_charge"` // use for delivery or rush orders
 	TaxRate       float64 `json:"tax_rate"`       // percentage 7.5-10% ? or fixed 0.75 ??
 	TaxAmount     float64 `json:"tax_amount"`
 	TotalAmount   float64 `json:"total_amount"`
@@ -28,6 +31,13 @@ type Product struct { //generic cake for modification
 	Price       float64 `json:"price"`       // e.g., 60.00
 	Description string  `json:"description"` // e.g., "Triple layer with ganache"
 	UserID      uint    `json:"user_id"`     // Who created this product
+}
+type Client struct {
+	gorm.Model
+	Name    string `json:"name"`
+	Email   string `json:"email" gorm:"uniqueIndex"`
+	Phone   string `json:"phone"`
+	Address string `json:"address"`
 }
 
 type CakeItem struct {
