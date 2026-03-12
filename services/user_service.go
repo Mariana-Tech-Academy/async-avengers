@@ -11,22 +11,18 @@ import (
 type UserService struct {
 	Repo repository.UserRepository
 }
-
+const TaxRate = 0.075
 func (s *UserService) SaveCakeInvoice(item *models.CakeItem) error {
-    // 1. Calculate base cost (Quantity * Unit Price)
-    subtotal := float64(item.Quantity) * item.UnitPrice
 
-    // 2. Add the Service Charge (delivery, rush, etc.)
-    amountBeforeTax := subtotal + item.ServiceCharge
+    subtotal := float64(item.Quantity) * item.UnitPrice     // 1. Calculate base cost (Quantity * Unit Price)
 
-    // 3. Apply the Tax Rate
-    taxAmount := amountBeforeTax * (item.TaxRate / 100)
+    amountBeforeTax := subtotal + item.ServiceCharge   // 2. Add the Service Charge 
 
-    // 4. Set the final Total
-    item.Total = amountBeforeTax + taxAmount
+    taxAmount := amountBeforeTax * (item.TaxRate / 100)   // 3. Apply the Tax Rate
 
-    // 5. Save to database using your repository
-    return s.Repo.CreateCakeItem(item) 
+    item.Total = amountBeforeTax + taxAmount // 4. Set the final Total
+
+    return s.Repo.CreateCakeItem(item)     // 5. Save to database using your repository
 }
 
 func (s *UserService) RegisterUser(req *models.User) error {
