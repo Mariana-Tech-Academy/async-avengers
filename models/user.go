@@ -18,11 +18,15 @@ type User struct {
 
 type Invoice struct {
 	gorm.Model
-	Subtotal      float64 `json:"subtotal"`
-	ServiceCharge float64 `json:"service_charge"` // useffor delivery or rush orders
-	TaxRate       float64 `json:"tax_rate"`       // percentage 7.5-10% ? or fixed 0.75 ??
-	TaxAmount     float64 `json:"tax_amount"`
-	TotalAmount   float64 `json:"total_amount"`
+	UserID        uint      `json:"user_id"`
+	ClientID      uint      `json:"client_id"` // Link to Client
+	Subtotal      float64   `json:"subtotal"`
+	ServiceCharge float64   `json:"service_charge"`
+	TaxRate       float64   `json:"tax_rate"`
+	TaxAmount     float64   `json:"tax_amount"`
+	TotalAmount   float64   `json:"total_amount"`
+	Status        string    `json:"status"` // e.g., "Pending", "Paid" (Required for US 2.3)
+	Items         []CakeItem `json:"items" gorm:"foreignKey:InvoiceID"`
 }
 
 type Product struct { //generic cake for modification
@@ -35,16 +39,16 @@ type Product struct { //generic cake for modification
 
 type Client struct {
 	gorm.Model
-	Name    string `json:"name"`
-	Email   string `json:"email" gorm:"uniqueIndex"`
-	Phone   string `json:"phone"`
-	Address string `json:"address"`
+	Name     string    `json:"name"`
+	Email    string    `json:"email" gorm:"uniqueIndex"`
+	Phone    string    `json:"phone"`
+	Address  string    `json:"address"`
+	Invoices []Invoice `json:"invoices" gorm:"foreignKey:ClientID"` // Added for US 2.3
 }
 
 type CakeItem struct {
 	gorm.Model
 	InvoiceID uint `json:"invoice_id"`
-    ClientID  uint    `json:"client_id"`
 
 	Size   string `json:"size"`   // in inches
 	Flavor string `json:"flavor"` // roughly 3/4
@@ -55,7 +59,7 @@ type CakeItem struct {
 	ServiceCharge float64 `json:"service_charge"`
 	TaxRate       float64 `json:"tax_rate"`
 	Total         float64 `json:"total"`
-	UserID        uint    `json:"user_id"`
+
 }
 
 func (c *CakeItem) CalculateTotal() {
