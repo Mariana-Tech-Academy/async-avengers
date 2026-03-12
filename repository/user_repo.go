@@ -9,11 +9,27 @@ type UserRepository interface {
 	GetUserByUsername(username string) (*models.User, error)
 	CreateUser(user *models.User) error
 	CreateCakeItem(item *models.CakeItem) error //added command
+
+	CreateClient(client *models.Client) error              // Added for US 2.1 mx client
+	UpdateClient(client *models.Client) error              // Added for US 2.2 mx client
+	GetInvoicesByClientID(clientID uint) ([]models.Invoice, error) // Added for US 2.3 mx client
+
+
+	CreateInvoice(invoice *models.Invoice) error // invoice/items
 }
+
 
 type UserRepo struct{}
 
 // Handler layer-------->services layer-------->repository layer(db methods)
+
+
+
+
+
+
+
+
 
 func (r *UserRepo) GetUserByUsername(username string) (*models.User, error) {
 	var user models.User
