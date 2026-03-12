@@ -19,10 +19,7 @@ func SetupRouter(userHandler *handlers.UserHandler) *mux.Router {
 	protected.Use(middleware.AuthMiddleware)
 
 	//  //authenticated routes
-	protected.HandleFunc("/user", userHandler.GetProfile).Methods("GET")     // US 1.1
-	protected.HandleFunc("/user", userHandler.CreateProfile).Methods("POST") // US 1.1
-	protected.HandleFunc("/user", userHandler.UpdateProfile).Methods("PUT")  // US 1.2
-
+	
 	return r
 
 }

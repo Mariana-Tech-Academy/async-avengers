@@ -19,17 +19,38 @@ type UserRepository interface {
 }
 
 
-type UserRepo struct{}
+type UserRepo struct{
+
+	DB *gorm.DB
+}
 
 // Handler layer-------->services layer-------->repository layer(db methods)
 
 
 
+func (r *UserRepo) UpdateUser(user *models.User) error { // 1.2 update business profile
+	return db.DB.Save(user).Error
+}
 
+func (r *UserRepo) CreateClient(client *models.Client) error {
+    return r.DB.Create(client).Error // 2.1 create clieng
+}
 
+func (r *UserRepo) UpdateClient(client *models.Client) error { // 2.2 edit client
+	return r.DB.Create(client).Error
+}
 
+func (r *UserRepo) CreateInvoice(invoice *models.Invoice) error { // 1.1 save cake items+ create invoice
+	return r.DB.Create(invoice).Error
+}
 
+func (r *UserRepo) CreateProduct(product *models.Product) error { // US 3.1 - Create Product
+    return r.DB.Create(product).Error
+}
 
+func (r *UserRepo) UpdateProduct(product *models.Product) error {
+    return r.DB.Save(product).Error // 3.2 update product + changes to name/price/description
+}
 
 func (r *UserRepo) GetUserByUsername(username string) (*models.User, error) {
 	var user models.User
