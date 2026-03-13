@@ -7,7 +7,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func SetupRouter(userHandler *handlers.UserHandler, businessHandler *handlers.BusinessHandler) *mux.Router {
+func SetupRouter(userHandler *handlers.UserHandler, 
+	businessHandler *handlers.BusinessHandler,
+	clientHandler *handlers.ClientHandler,) *mux.Router {
 	r := mux.NewRouter()
 
 	//public routes
