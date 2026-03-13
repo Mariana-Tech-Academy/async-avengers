@@ -33,6 +33,13 @@ func SetupRouter(userHandler *handlers.UserHandler,
 	protected.HandleFunc("/clients/user/{userID}", clientHandler.GetClientsByUserID).Methods("GET") // Get all clients for a user
 	protected.HandleFunc("/clients/{clientID}", clientHandler.UpdateClient).Methods("PUT") // Update client
 
+   // US 3 
+
+   // US 4 
+
+   // US 5 
+
+   // US 6 
 
 	return r
 
