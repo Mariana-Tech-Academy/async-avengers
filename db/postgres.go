@@ -37,7 +37,7 @@ func InitDb() {
 	}
 
 	//migrate the schema
-	dbErr = DB.AutoMigrate(models.User{}, models.Business{})
+	dbErr = DB.AutoMigrate(models.User{}, models.Business{}, models.Client{})
 	if dbErr != nil {
 		log.Fatal("failed to migrate schema", dbErr)
 	}
