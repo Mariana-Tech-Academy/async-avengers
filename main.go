@@ -9,9 +9,13 @@ import (
 	"invoiceSys/services"
 	"log"
 	"net/http"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+
+	godotenv.Load()
+	
 	db.InitDb()
 
 	// initialize repositories

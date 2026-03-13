@@ -13,6 +13,7 @@ import (
 var DB *gorm.DB
 
 func InitDb() {
+	
 	//connect to database
 	var err error
 	connStr := fmt.Sprintf(

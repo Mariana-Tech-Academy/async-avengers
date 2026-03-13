@@ -20,6 +20,7 @@ func SetupRouter(userHandler *handlers.UserHandler) *mux.Router {
 
 	// //authenticated routes
 
+	protected.HandleFunc("/send-invoice", handlers.SendInvoiceHandler).Methods("POST")
 
 	return r
 
