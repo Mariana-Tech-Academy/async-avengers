@@ -11,10 +11,6 @@ type UserRepository interface {
 	GetUserByUsername(username string) (*models.User, error)
 	CreateUser(user *models.User) error
 	UpdateUser(user *models.User) error
-
-	CreateCakeItem(item *models.CakeItem) error //added command
-	CreateProduct(product *models.Product) error
-	UpdateProduct(product *models.Product) error
 }
 
 type UserRepo struct {

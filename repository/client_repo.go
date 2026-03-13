@@ -9,7 +9,7 @@ import (
 )
 
 
-type clientRepository interface {
+type ClientRepository interface {
 	CreateClient(client *models.Client) error // 2,1 mx client
 	UpdateClient(client *models.Client) error //2.2 mx client
 }
