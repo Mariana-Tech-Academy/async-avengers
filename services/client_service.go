@@ -40,7 +40,6 @@ func (s *ClientService) GetClientsByUserID(userID uint) ([]models.Client, error)
 
 // US 2.2 - Edit Client Details: handles the logic for updating client details
 func (s *ClientService) UpdateClient(clientID uint, updated *models.Client) error {
-	// fetch the existing client before updating
 	existing, err := s.Repo.GetClientByID(clientID)
 	if err != nil {
 		return errors.New("client not found")
