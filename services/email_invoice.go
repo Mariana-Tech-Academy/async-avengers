@@ -12,7 +12,7 @@ func SendInvoiceEmail(ToEmail string, PDFPath string) error { //Define the funct
 	m.SetHeader("Subject", "Invoice")            //Set Email Subject
 
 	m.SetBody("text/plain", "Hi Thanks for using the Cake Complany please find attached your invoice.") //Set Email Body
-	m.Attach(PDFPath)                                                                             //Attache the PDF
+	m.Attach(PDFPath)                                                                                   //Attache the PDF
 
 	//Create a Connection to the email server
 	d := gomail.NewDialer(
@@ -22,6 +22,6 @@ func SendInvoiceEmail(ToEmail string, PDFPath string) error { //Define the funct
 		"Password",
 	)
 
-return d.DialAndSend(m)						// Send the email
+	return d.DialAndSend(m) // Send the email
 
 }
