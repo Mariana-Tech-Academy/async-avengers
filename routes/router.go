@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func SetupRouter(userHandler *handlers.UserHandler) *mux.Router {
+func SetupRouter(userHandler *handlers.UserHandler, businessHandler *handlers.BusinessHandler) *mux.Router {
 	r := mux.NewRouter()
 
 	//public routes
@@ -20,7 +20,9 @@ func SetupRouter(userHandler *handlers.UserHandler) *mux.Router {
 
 	// //authenticated routes
 
-	protected.HandleFunc("/send-invoice", handlers.SendInvoiceHandler).Methods("POST")
+	protected.HandleFunc("/business", businessHandler.CreateBusiness).Methods("POST")         // Create bp - POST /business
+	protected.HandleFunc("/business/{userID}", businessHandler.GetBusiness).Methods("GET")    // Business details appear on invoices - GET /business/{userID}
+	protected.HandleFunc("/business/{userID}", businessHandler.UpdateBusiness).Methods("PUT") // Edit business info & add tax info - PUT /business/{userID}
 
 	return r
 

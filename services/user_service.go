@@ -12,6 +12,22 @@ type UserService struct {
 	Repo repository.UserRepository
 }
 
+const TaxRate = 0.075
+
+func (s *UserService) SaveCakeInvoice(item *models.CakeItem) error {
+
+	subtotal := float64(item.Quantity) * item.UnitPrice // 1. Calculate base cost (Quantity * Unit Price)
+
+	amountBeforeTax := subtotal + item.ServiceCharge // 2. Add the Service Charge
+
+	// Use the constant you defined on line 14
+	taxAmount := amountBeforeTax * TaxRate // already chnged in user.go 3. Apply the Tax Rate
+	item.TaxAmount = taxAmount //maee sure tax amount is stated even if corretly calculated 
+	item.Total = amountBeforeTax + taxAmount // 4. Set the final Total
+
+	return s.Repo.CreateCakeItem(item) // 5. Save to database using your repository
+}
+
 func (s *UserService) RegisterUser(req *models.User) error {
 
 	// Check if user already exists

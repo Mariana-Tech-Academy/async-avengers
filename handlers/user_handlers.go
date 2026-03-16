@@ -48,7 +48,28 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//response
+	// response
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(token)
+	json.NewEncoder(w).Encode(map[string]string{"token": token})
+}
+
+func (h *UserHandler) CreateCakeInvoice(w http.ResponseWriter, r *http.Request) {
+	var cake models.CakeItem
+
+	// 1. Decode the cake details (Size, Filler, Flavor, etc.)
+	if err := json.NewDecoder(r.Body).Decode(&cake); err != nil {
+		http.Error(w, "Invalid cake data", http.StatusBadRequest)
+		return
+	}
+
+	// 2. Call the service layer to handle the math and saving
+	// (You will need to add this method to your service file next!)
+	if err := h.Service.SaveCakeInvoice(&cake); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// response
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(cake)
 }
