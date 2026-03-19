@@ -8,6 +8,8 @@ import (
 type UserRepository interface {
 	GetUserByUsername(username string) (*models.User, error)
 	CreateUser(user *models.User) error
+
+	GetInvoiceByID(invoiceID uint) (*models.Invoice, error)
 }
 
 type UserRepo struct{}
@@ -30,4 +32,19 @@ func (r *UserRepo) CreateUser(user *models.User) error {
 		return err
 	}
 	return nil
+
+	func (r *UserRepo) GetInvoiceByID(invoiceID uint) (moddels.Invoice, error) {
+		var invoice models.invoice 
+
+		err :=db.DB.
+		    preload("User").
+			Preload("client").
+			preload("Items").
+			First(&invoice, invoiceID).Error
+			if err != nil {
+				return nil, err
+			}
+	return &invoice,nil 
+	
+	}
 }

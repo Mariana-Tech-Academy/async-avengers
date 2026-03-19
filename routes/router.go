@@ -33,7 +33,7 @@ func SetupRouter(userHandler *handlers.UserHandler,
 	protected.HandleFunc("/clients/user/{userID}", clientHandler.GetClientsByUserID).Methods("GET") // Get all clients for a user
 	protected.HandleFunc("/clients/{clientID}", clientHandler.UpdateClient).Methods("PUT") // Update client
 
-
+    protected.HandleFunc("/invoices/{id}/download", userHandler.DownloadInvoicePDF).Methods("GET")//Epic 5.2 - Download invoice PDF
 	return r
 
 }
