@@ -9,7 +9,7 @@ import (
 
 type UserRepository interface {
 	GetUserByUsername(username string) (*models.User, error)
-	CreateUser(user *models.User) error
+	CreateCakeItem(user *models.User) error
 	UpdateUser(user *models.User) error
 }
 
@@ -29,7 +29,7 @@ func (r *UserRepo) GetUserByUsername(username string) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *UserRepo) CreateUser(user *models.User) error {
+func (r *UserRepo) CreateCakeItem(user *models.User) error {
 	err := r.DB.Create(&user).Error
 	if err != nil {
 		return err

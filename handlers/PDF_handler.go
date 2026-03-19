@@ -8,8 +8,7 @@ import (
 )
 
 type InvoiceRequest struct {
-	Email string `json:"email`
-	PDFPath string `json:"pdfPath"`
+	InvoiceID int `json:"invoice_id"`
 }
 
 func SendInvoiceHandler(w http.ResponseWriter, r *http.Request) { //Define the function
@@ -22,7 +21,7 @@ func SendInvoiceHandler(w http.ResponseWriter, r *http.Request) { //Define the f
 	}
 
 	// call service layer
-	err = services.SendInvoiceEmail(req.Email, req.PDFPath)
+	err := services.SendInvoiceEmail(req.InvoiceID)
 	if err != nil { //Handle Email Errors
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
