@@ -21,17 +21,21 @@ func main() {
 	// initialize repositories
 	userRepo := &repository.UserRepo{}
 	businessRepo := &repository.BusinessRepo{}
+	invoiceRepo := &repository.InvoiceRepo{}
 
 	// initialize service
 	userService := &services.UserService{Repo: userRepo}
 	businessService := &services.BusinessService{Repo: businessRepo}
+	invoiceService := &services.invoiceService{Repo:invoiceRepo}
 
 	// initialize handlers
 	userHandler := &handlers.UserHandler{userService}
 	businessHandler := &handlers.BusinessHandler{businessService}
+	invoiceHandler := &handlers.InvoiceHandler{invoiceService}
+
 
 	//routes
-	r := routes.SetupRouter(userHandler, businessHandler)
+	r := routes.SetupRouter(userHandler, businessHandler, invoiceHandler)
 
 	//start server
 	err := http.ListenAndServe(":8080", r)
