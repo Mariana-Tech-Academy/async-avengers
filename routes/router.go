@@ -48,6 +48,9 @@ func SetupRouter(userHandler *handlers.UserHandler,
 
 	protected.HandleFunc("/invoices/{invoiceID}/pdf", pdfHandler.DownloadInvoicePDF).Methods("GET") // US 5.2 - Download invoice as PDF
 
+	protected.HandleFunc("/invoices/{invoiceID}/status", invoiceHandler.UpdateInvoiceStatus).Methods("PUT") // US 6.1 - Update invoice status
+	protected.HandleFunc("/invoices/{invoiceID}/status", invoiceHandler.GetInvoiceStatus).Methods("GET") // US 6.2 - View invoice status
+
 	return r
 
 }
