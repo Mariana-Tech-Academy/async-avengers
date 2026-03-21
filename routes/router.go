@@ -8,9 +8,10 @@ import (
 )
 
 func SetupRouter(userHandler *handlers.UserHandler, 
-	businessHandler *handlers.BusinessHandler,
-	clientHandler *handlers.ClientHandler,
-	productHandler *handlers.ProductHandler,) *mux.Router {
+	businessHandler *handlers.BusinessHandler, 
+	clientHandler *handlers.ClientHandler, 
+	productHandler *handlers.ProductHandler,
+	invoiceHandler *handlers.InvoiceHandler,) *mux.Router {
 	r := mux.NewRouter()
 
 	//public routes
@@ -23,23 +24,26 @@ func SetupRouter(userHandler *handlers.UserHandler,
 
 	// //authenticated routes
 
-	// US 1
-	protected.HandleFunc("/business", businessHandler.CreateBusiness).Methods("POST") // Create bp - POST /business
-	protected.HandleFunc("/business/{userID}", businessHandler.GetBusiness).Methods("GET") // Business details appear on invoices - GET /business/{userID}
-	protected.HandleFunc("/business/{userID}", businessHandler.UpdateBusiness).Methods("PUT") // Edit business info & add tax info - PUT /business/{userID}
+	protected.HandleFunc("/business", businessHandler.CreateBusiness).Methods("POST") // US 1.1 - Create bp
+	protected.HandleFunc("/business", businessHandler.GetBusiness).Methods("GET") // US 1.1 - Business details appear on invoices 
+	protected.HandleFunc("/business", businessHandler.UpdateBusiness).Methods("PUT") // US 1.2 + US 1.3 - Edit business info & add tax info
 
-	// US 2
-	protected.HandleFunc("/clients", clientHandler.CreateClient).Methods("POST") // Add client
-	protected.HandleFunc("/clients/{clientID}", clientHandler.GetClientByID).Methods("GET") // Get client
-	protected.HandleFunc("/clients/user/{userID}", clientHandler.GetClientsByUserID).Methods("GET") // Get all clients for a user
-	protected.HandleFunc("/clients/{clientID}", clientHandler.UpdateClient).Methods("PUT") // Update client
 
-	// US 3
-	protected.HandleFunc("/products", productHandler.CreateProduct).Methods("POST") // Create product
-	protected.HandleFunc("/products/{productID}", productHandler.GetProductByID).Methods("GET") // Get product by ID
-	protected.HandleFunc("/products/user/{userID}", productHandler.GetProductsByUserID).Methods("GET") // Get all products for a use
-	protected.HandleFunc("/products/{productID}", productHandler.UpdateProduct).Methods("PUT") // Edit Product
+	protected.HandleFunc("/clients", clientHandler.CreateClient).Methods("POST") // US 2.1 -  Add client
+	protected.HandleFunc("/clients/user", clientHandler.GetClientsByUserID).Methods("GET") // US 2.3 - Get all clients for a user
+	protected.HandleFunc("/clients/{clientID}", clientHandler.GetClientByID).Methods("GET") // US 2.1 - Get client by ID
+	protected.HandleFunc("/clients/{clientID}", clientHandler.UpdateClient).Methods("PUT") // US 2.2 - Update client
 
+	protected.HandleFunc("/products", productHandler.CreateProduct).Methods("POST") // US 3.1 - Create product
+	protected.HandleFunc("/products/user", productHandler.GetProductsByUserID).Methods("GET") // US 3.1 - Get all products for a user
+	protected.HandleFunc("/products/{productID}", productHandler.GetProductByID).Methods("GET") // US 3.1 - Get product by ID
+	protected.HandleFunc("/products/{productID}", productHandler.UpdateProduct).Methods("PUT") // US 3.2 - Update product
+
+	protected.HandleFunc("/invoices", invoiceHandler.CreateInvoice).Methods("POST") // US 4.1 - Create invoice
+	protected.HandleFunc("/invoices/user", invoiceHandler.GetInvoicesByUserID).Methods("GET") // US 4.1 - Get all invoices for a user
+	protected.HandleFunc("/invoices/{invoiceID}", invoiceHandler.GetInvoiceByID).Methods("GET") // US 4.1 - Get invoice by ID
+	protected.HandleFunc("/invoices/client/{clientID}", invoiceHandler.GetInvoicesByClientID).Methods("GET") // US 2.3 - Get all invoices for a client
+	protected.HandleFunc("/invoices/{invoiceID}", invoiceHandler.UpdateInvoice).Methods("PUT") // US 4.3 - Update draft invoice
 
 	return r
 
