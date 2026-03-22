@@ -18,7 +18,7 @@ type ProductHandler struct {
 func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	// get user ID from token instead of request body
 	userID := r.Context().Value("user_id").(uint)
-	
+
 	var product models.Product
 	err := json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
@@ -54,6 +54,12 @@ func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 	product, err := h.Service.GetProductByID(uint(productID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	// make sure product belongs to logged in user
+	userID := r.Context().Value("user_id").(uint)
+	if product.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -95,7 +101,17 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// call service layer to update the product
+	// make sure product belongs to logged in user
+	userID := r.Context().Value("user_id").(uint)
+	product, err := h.Service.GetProductByID(uint(productID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	if product.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 	err = h.Service.UpdateProduct(uint(productID), &updated)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

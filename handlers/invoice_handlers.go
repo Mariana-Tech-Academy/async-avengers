@@ -18,7 +18,7 @@ type InvoiceHandler struct {
 func (h *InvoiceHandler) CreateInvoice(w http.ResponseWriter, r *http.Request) {
 	// get user ID from token instead of request body
 	userID := r.Context().Value("user_id").(uint)
-	
+
 	var invoice models.Invoice
 	err := json.NewDecoder(r.Body).Decode(&invoice)
 	if err != nil {
@@ -54,6 +54,12 @@ func (h *InvoiceHandler) GetInvoiceByID(w http.ResponseWriter, r *http.Request) 
 	invoice, err := h.Service.GetInvoiceByID(uint(invoiceID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	// make sure invoice belongs to logged in user
+	userID := r.Context().Value("user_id").(uint)
+	if invoice.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -114,6 +120,17 @@ func (h *InvoiceHandler) UpdateInvoice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// make sure invoice belongs to logged in user
+	userID := r.Context().Value("user_id").(uint)
+	invoice, err := h.Service.GetInvoiceByID(uint(invoiceID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	if invoice.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 	err = h.Service.UpdateInvoice(uint(invoiceID), &updated)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -144,6 +161,17 @@ func (h *InvoiceHandler) UpdateInvoiceStatus(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	// make sure invoice belongs to logged in user
+	userID := r.Context().Value("user_id").(uint)
+	invoice, err := h.Service.GetInvoiceByID(uint(invoiceID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	if invoice.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 	err = h.Service.UpdateInvoiceStatus(uint(invoiceID), body.Status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

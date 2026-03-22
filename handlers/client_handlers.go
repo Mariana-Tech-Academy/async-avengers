@@ -51,9 +51,16 @@ func (h *ClientHandler) GetClientByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// get user ID from token
+	userID := r.Context().Value("user_id").(uint)
 	client, err := h.Service.GetClientByID(uint(clientID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	// make sure the client belongs to the logged in user
+	if client.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -94,7 +101,17 @@ func (h *ClientHandler) UpdateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// call service layer to update the client
+	// make sure client belongs to logged in user
+	userID := r.Context().Value("user_id").(uint)
+	client, err := h.Service.GetClientByID(uint(clientID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	if client.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 	err = h.Service.UpdateClient(uint(clientID), &updated)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
