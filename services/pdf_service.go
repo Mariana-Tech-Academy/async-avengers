@@ -56,19 +56,21 @@ func GenerateInvoicePDF(invoice *models.Invoice, business *models.Business, clie
 	// US 5.2: PDF contains item breakdown
 	pdf.SetFont("Arial", "B", 10)
 	pdf.SetFillColor(200, 200, 200)
-	pdf.CellFormat(80, 8, "Item", "1", 0, "", true, 0, "")
-	pdf.CellFormat(30, 8, "Quantity", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(40, 8, "Unit Price", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(40, 8, "Total", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(60, 8, "Item", "1", 0, "", true, 0, "")
+	pdf.CellFormat(50, 8, "Description", "1", 0, "", true, 0, "")
+	pdf.CellFormat(20, 8, "Qty", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(30, 8, "Unit Price", "1", 0, "C", true, 0, "")
+	pdf.CellFormat(30, 8, "Total", "1", 0, "C", true, 0, "")
 	pdf.Ln(8)
 
 	// add each line item
 	pdf.SetFont("Arial", "", 10)
 	for _, item := range invoice.Items {
-		pdf.CellFormat(80, 8, item.Name, "1", 0, "", false, 0, "")
-		pdf.CellFormat(30, 8, fmt.Sprintf("%d", item.Quantity), "1", 0, "C", false, 0, "")
-		pdf.CellFormat(40, 8, fmt.Sprintf("GBP %.2f", item.UnitPrice), "1", 0, "C", false, 0, "")
-		pdf.CellFormat(40, 8, fmt.Sprintf("GBP %.2f", item.Total), "1", 0, "C", false, 0, "")
+		pdf.CellFormat(60, 8, item.Name, "1", 0, "", false, 0, "")
+		pdf.CellFormat(50, 8, item.Description, "1", 0, "", false, 0, "")
+		pdf.CellFormat(20, 8, fmt.Sprintf("%d", item.Quantity), "1", 0, "C", false, 0, "")
+		pdf.CellFormat(30, 8, fmt.Sprintf("GBP %.2f", item.UnitPrice), "1", 0, "C", false, 0, "")
+		pdf.CellFormat(30, 8, fmt.Sprintf("GBP %.2f", item.Total), "1", 0, "C", false, 0, "")
 		pdf.Ln(8)
 	}
 	pdf.Ln(4)

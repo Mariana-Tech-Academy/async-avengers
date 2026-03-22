@@ -11,7 +11,8 @@ import (
 )
 
 type InvoiceHandler struct {
-	Service *services.InvoiceService
+	Service       *services.InvoiceService
+	ClientService *services.ClientService
 }
 
 // Create Invoice - receives the request and creates a new invoice
@@ -29,7 +30,17 @@ func (h *InvoiceHandler) CreateInvoice(w http.ResponseWriter, r *http.Request) {
 	// set user ID from token automatically
 	invoice.UserID = userID
 
-	// call service layer to create the invoice
+	// make sure client belongs to logged in user
+	client, err := h.ClientService.GetClientByID(invoice.ClientID)
+	if err != nil {
+		http.Error(w, "client not found", http.StatusNotFound)
+		return
+	}
+	if client.UserID != invoice.UserID {
+		http.Error(w, "unauthorized - this client does not belong to you", http.StatusUnauthorized)
+		return
+	}
+
 	err = h.Service.CreateInvoice(&invoice)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -93,6 +104,18 @@ func (h *InvoiceHandler) GetInvoicesByClientID(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	// make sure client belongs to logged in user
+	userID := r.Context().Value("user_id").(uint)
+	client, err := h.ClientService.GetClientByID(uint(clientID))
+	if err != nil {
+		http.Error(w, "client not found", http.StatusNotFound)
+		return
+	}
+	if client.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	invoices, err := h.Service.GetInvoicesByClientID(uint(clientID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
@@ -129,6 +152,17 @@ func (h *InvoiceHandler) UpdateInvoice(w http.ResponseWriter, r *http.Request) {
 	}
 	if invoice.UserID != userID {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// make sure client in updated invoice belongs to logged in user
+	client, err := h.ClientService.GetClientByID(updated.ClientID)
+	if err != nil {
+		http.Error(w, "client not found", http.StatusNotFound)
+		return
+	}
+	if client.UserID != userID {
+		http.Error(w, "unauthorized - this client does not belong to you", http.StatusUnauthorized)
 		return
 	}
 	err = h.Service.UpdateInvoice(uint(invoiceID), &updated)

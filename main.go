@@ -33,7 +33,7 @@ func main() {
 	businessHandler := &handlers.BusinessHandler{Service: businessService}
 	clientHandler := &handlers.ClientHandler{Service: clientService}
 	productHandler := &handlers.ProductHandler{Service: productService}
-	invoiceHandler := &handlers.InvoiceHandler{Service: invoiceService}
+	invoiceHandler := &handlers.InvoiceHandler{Service: invoiceService, ClientService: clientService,}
 	pdfHandler := &handlers.PDFHandler{ InvoiceService:  invoiceService, BusinessService: businessService, ClientService:   clientService,}
 
 	//routes

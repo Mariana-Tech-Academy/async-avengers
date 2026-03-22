@@ -31,6 +31,13 @@ func (h *PDFHandler) DownloadInvoicePDF(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	// make sure invoice belongs to logged in user
+	userID := r.Context().Value("user_id").(uint)
+	if invoice.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	// fetch the business profile
 	business, err := h.BusinessService.GetBusiness(invoice.UserID)
 	if err != nil {
