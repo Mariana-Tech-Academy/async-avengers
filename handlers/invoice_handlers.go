@@ -226,6 +226,18 @@ func (h *InvoiceHandler) GetInvoiceStatus(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// make sure invoice belongs to logged in user
+	userID := r.Context().Value("user_id").(uint)
+	invoice, err := h.Service.GetInvoiceByID(uint(invoiceID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	if invoice.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	status, err := h.Service.GetInvoiceStatus(uint(invoiceID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
