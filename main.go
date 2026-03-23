@@ -9,6 +9,7 @@ import (
 	"invoiceSys/services"
 	"log"
 	"net/http"
+	
 )
 
 func main() {
@@ -17,17 +18,23 @@ func main() {
 	// initialize repositories
 	userRepo := &repository.UserRepo{}
 	businessRepo := &repository.BusinessRepo{}
+	clientRepo := &repository.ClientRepo{}
+	productRepo := &repository.ProductRepo{}
 
 	// initialize service
 	userService := &services.UserService{Repo: userRepo}
 	businessService := &services.BusinessService{Repo: businessRepo}
+	clientService := &services.ClientService{Repo: clientRepo}
+	productService := &services.ProductService{Repo: productRepo}
 
 	// initialize handlers
-	userHandler := &handlers.UserHandler{userService}
-	businessHandler := &handlers.BusinessHandler{businessService}
-
+	userHandler := &handlers.UserHandler{Service: userService}
+    businessHandler := &handlers.BusinessHandler{Service: businessService}
+    clientHandler := &handlers.ClientHandler{Service: clientService}
+    productHandler := &handlers.ProductHandler{Service: productService}
+	
 	//routes
-	r := routes.SetupRouter(userHandler, businessHandler)
+	r := routes.SetupRouter(userHandler, businessHandler, clientHandler, productHandler)
 
 	//start server
 	err := http.ListenAndServe(":8080", r)

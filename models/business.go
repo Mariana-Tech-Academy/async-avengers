@@ -5,7 +5,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
 // Creating business profile
 type Business struct {
 	gorm.Model
