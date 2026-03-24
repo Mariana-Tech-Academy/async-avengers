@@ -12,6 +12,7 @@ import (
 type InvoiceService struct {
 	Repo         repository.InvoiceRepository
 	BusinessRepo repository.BusinessRepository
+	ProductRepo repository.ProductRepository
 }
 
 // Creates Invoice - handles the logic for creating a new invoice

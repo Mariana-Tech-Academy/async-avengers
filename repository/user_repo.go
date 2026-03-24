@@ -15,19 +15,15 @@ type UserRepository interface {
 	UpdateUser(user *models.User) error
 }
 
-type UserRepo struct {
-	DB *gorm.DB
-}
+type UserRepo struct{}
 
 // Handler layer-------->services layer-------->repository layer(db methods)
-
 func (r *UserRepo) GetUserByUsername(username string) (*models.User, error) {
 	var user models.User
 	err := db.DB.Where("username = ?", username).First(&user).Error
 	if err != nil {
 		return &models.User{}, err
 	}
-
 	return &user, nil
 }
 
