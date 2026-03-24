@@ -36,8 +36,13 @@ func (s *InvoiceService) CreateInvoice(invoice *models.Invoice) error {
 	// calculate subtotal from all line items
 	var subtotal float64
 	for i := range invoice.Items {
+		product, err := s.Repo.GetProductByID(invoice.Items[i].ProductID)
+		if err != nil {
+			return err
+		}
 		// calculate total for each line item
-		invoice.Items[i].Total = float64(invoice.Items[i].Quantity) * invoice.Items[i].UnitPrice
+		invoice.Items[i].UnitPrice = product.Price
+		invoice.Items[i].Total = float64(invoice.Items[i].Quantity) * product.Price
 		subtotal += invoice.Items[i].Total
 	}
 

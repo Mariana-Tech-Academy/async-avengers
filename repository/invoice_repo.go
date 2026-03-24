@@ -12,6 +12,7 @@ type InvoiceRepository interface {
 	GetInvoicesByUserID(userID uint) ([]models.Invoice, error)          // US 4.1: retrieves all invoices for a business owner
 	GetInvoicesByClientID(clientID uint) ([]models.Invoice, error)      // US 2.3: retrieves all invoices for a client
 	UpdateInvoice(invoice *models.Invoice) error                        // US 4.3: updates an existing invoice
+	GetProductByID(productID uint) (*models.Product, error)
 }
 
 type InvoiceRepo struct{}
@@ -62,4 +63,13 @@ func (r *InvoiceRepo) UpdateInvoice(invoice *models.Invoice) error {
 		return err
 	}
 	return nil
+}
+
+func (r *InvoiceRepo) GetProductByID(productID uint) (*models.Product, error) {
+	var product models.Product
+	err := db.DB.Where("id = ?", productID).First(&product).Error
+	if err != nil {
+		return &models.Product{}, err
+	}
+	return &product, nil
 }
