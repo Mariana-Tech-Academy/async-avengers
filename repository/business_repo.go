@@ -2,10 +2,7 @@ package repository
 
 import (
 	"invoiceSys/db"
-	//"invoiceSys/db"
 	"invoiceSys/models"
-
-	"gorm.io/gorm"
 )
 
 type BusinessRepository interface {

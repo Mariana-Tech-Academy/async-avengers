@@ -1,12 +1,8 @@
 package repository
 
 import (
-	//"invoiceSys/db" dependency injection using r*
-
 	"invoiceSys/db"
 	"invoiceSys/models"
-
-	"gorm.io/gorm"
 )
 
 type UserRepository interface {
