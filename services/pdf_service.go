@@ -5,7 +5,6 @@ import (
 	"invoiceSys/models"
 
 	"github.com/jung-kurt/gofpdf"
-
 )
 
 // US 5.2 - Download Invoice as PDF: generates a PDF for a given invoice

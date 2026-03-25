@@ -10,7 +10,7 @@ type ProductService struct {
 	Repo repository.ProductRepository
 }
 
-// US 3.1 - Handles the logic for creating a new product
+// Handles the logic for creating a new product
 func (s *ProductService) CreateProduct(product *models.Product) error {
 	// save the new product to the database
 	err := s.Repo.CreateProduct(product)
@@ -20,7 +20,7 @@ func (s *ProductService) CreateProduct(product *models.Product) error {
 	return nil
 }
 
-// US 3.1 - Get product by ID
+// Get product by ID
 func (s *ProductService) GetProductByID(productID uint) (*models.Product, error) {
 	product, err := s.Repo.GetProductByID(productID)
 	if err != nil {
@@ -29,7 +29,7 @@ func (s *ProductService) GetProductByID(productID uint) (*models.Product, error)
 	return product, nil
 }
 
-// US 3.1 - Get all products
+// Get all products
 func (s *ProductService) GetProductsByUserID(userID uint) ([]models.Product, error) {
 	products, err := s.Repo.GetProductsByUserID(userID)
 	if err != nil {
@@ -38,7 +38,7 @@ func (s *ProductService) GetProductsByUserID(userID uint) ([]models.Product, err
 	return products, nil
 }
 
-// US 3.2 - Updating - Handles the logic for updating product details
+// Updating - Handles the logic for updating product details
 func (s *ProductService) UpdateProduct(productID uint, updated *models.Product) error {
 	// fetch the existing product before updating
 	existing, err := s.Repo.GetProductByID(productID)

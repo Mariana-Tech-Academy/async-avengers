@@ -35,7 +35,7 @@ func main() {
 	productHandler := &handlers.ProductHandler{Service: productService}
 	invoiceHandler := &handlers.InvoiceHandler{Service: invoiceService}
 	pdfHandler := &handlers.PDFHandler{ InvoiceService:  invoiceService, BusinessService: businessService, ClientService:   clientService,}
-	
+
 	//routes
 	r := routes.SetupRouter(userHandler, businessHandler, clientHandler, productHandler, invoiceHandler, pdfHandler)
 

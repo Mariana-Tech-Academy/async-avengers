@@ -14,15 +14,20 @@ type ProductHandler struct {
 	Service *services.ProductService
 }
 
-// US 3.1 - Create Product - receives the request and creates a new product
+// Create Product - receives the request and creates a new product
 func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
-	// collect product details from the request body
+	// get user ID from token instead of request body
+	userID := r.Context().Value("user_id").(uint)
+	
 	var product models.Product
 	err := json.NewDecoder(r.Body).Decode(&product)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	// set user ID from token automatically
+	product.UserID = userID
 
 	// call service layer to save the product
 	err = h.Service.CreateProduct(&product)
@@ -32,11 +37,12 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// return the created product in the response
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(product)
 }
 
-// US 3.1 - Get product by ID - retrieves a single product
+// Get product by ID - retrieves a single product
 func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	productID, err := strconv.Atoi(vars["productID"])
@@ -51,18 +57,15 @@ func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(product)
 }
 
-// US 3.1 - Get all products - retrieves all products for a business owner
+// Get all products - retrieves all products for a business owner
 func (h *ProductHandler) GetProductsByUserID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	userID, err := strconv.Atoi(vars["userID"])
-	if err != nil {
-		http.Error(w, "invalid user ID", http.StatusBadRequest)
-		return
-	}
+	// get user ID from token instead of URL
+	userID := r.Context().Value("user_id").(uint)
 
 	products, err := h.Service.GetProductsByUserID(uint(userID))
 	if err != nil {
@@ -70,11 +73,12 @@ func (h *ProductHandler) GetProductsByUserID(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(products)
 }
 
-// US 3.2 - Edit Product - receives the request and updates product details
+// Edit Product - receives the request and updates product details
 func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	productID, err := strconv.Atoi(vars["productID"])
@@ -99,6 +103,8 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// return the updated product
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(updated)
 }
