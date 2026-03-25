@@ -48,7 +48,6 @@ func (s *ClientService) UpdateClient(clientID uint, updated *models.Client) erro
 	// US 2.2: update client details - changes apply to future invoices
 	existing.Name = updated.Name
 	existing.Email = updated.Email
-	existing.Phone = updated.Phone
 	existing.Address = updated.Address
 
 	// save the updated client

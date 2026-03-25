@@ -20,7 +20,7 @@ func InitDb() {
 		log.Fatal("Error loading .env file")
 	}
 
-	//connect to database
+	// connect to database
 	connStr := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
@@ -29,17 +29,16 @@ func InitDb() {
 		os.Getenv("DB_NAME"),
 		os.Getenv("DB_PORT"),
 	)
-	
-	var dbErr error
+
 	DB, err = gorm.Open(postgres.Open(connStr), &gorm.Config{})
-	if dbErr != nil {
-		panic(dbErr)
+	if err != nil {
+		panic(err)
 	}
 
-	//migrate the schema
-	dbErr = DB.AutoMigrate(models.User{}, models.Business{})
-	if dbErr != nil {
-		log.Fatal("failed to migrate schema", dbErr)
+	// migrate the schema
+	err = DB.AutoMigrate(models.User{}, models.Business{}, models.Client{}, models.Product{}, models.Invoice{}, models.InvoiceItem{})
+	if err != nil {
+		log.Fatal("failed to migrate schema", err)
 	}
 
 	fmt.Println("connected to database successfully!")

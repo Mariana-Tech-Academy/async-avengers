@@ -9,7 +9,7 @@ import (
 type Business struct {
 	gorm.Model
 
-	UserID  uint     `json:"user_id"`
+	UserID  uint     `json:"-"`
 	Name    string   `json:"name"`
 	Address string   `json:"address"`
 	Phone   string   `json:"phone"`

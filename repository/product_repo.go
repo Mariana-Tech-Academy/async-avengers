@@ -1,46 +1,54 @@
 package repository
 
 import (
-    "invoiceSys/models"
-    "gorm.io/gorm"
+	"invoiceSys/db"
+	"invoiceSys/models"
 )
 
-// ProductRepository defines the contract for product database operations
+// Defining the database operations for products
 type ProductRepository interface {
-    CreateProduct(product *models.Product) error
-    UpdateProduct(product *models.Product) error
-    GetProductByID(id uint) (*models.Product, error)
-    GetProductsByBusinessID(businessID uint) ([]models.Product, error)
+	CreateProduct(product *models.Product) error                  // saves a new product to the database
+	GetProductByID(productID uint) (*models.Product, error)       // retrieves a product by ID
+	GetProductsByUserID(userID uint) ([]models.Product, error)    // retrieves all products for a business owner
+	UpdateProduct(product *models.Product) error                  // updates existing product in the database
 }
 
-type ProductRepo struct {
-    DB *gorm.DB
-}
+type ProductRepo struct{}
 
-// CreateProduct persists a new product to the database (US 3.1)
+// Create product
 func (r *ProductRepo) CreateProduct(product *models.Product) error {
-    return r.DB.Create(product).Error
+	err := db.DB.Create(&product).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-// UpdateProduct updates an existing product's details (US 3.2)
-// GORM's Save method updates all fields of the provided model
+// Get product by ID
+func (r *ProductRepo) GetProductByID(productID uint) (*models.Product, error) {
+	var product models.Product
+	err := db.DB.Where("id = ?", productID).First(&product).Error
+	if err != nil {
+		return &models.Product{}, err
+	}
+	return &product, nil
+}
+
+// Get all products
+func (r *ProductRepo) GetProductsByUserID(userID uint) ([]models.Product, error) {
+	var products []models.Product
+	err := db.DB.Where("user_id = ?", userID).Find(&products).Error
+	if err != nil {
+		return []models.Product{}, err
+	}
+	return products, nil
+}
+
+// Edit product
 func (r *ProductRepo) UpdateProduct(product *models.Product) error {
-    return r.DB.Save(product).Error
-}
-
-// GetProductByID fetches a single product by its primary key
-func (r *ProductRepo) GetProductByID(id uint) (*models.Product, error) {
-    var product models.Product
-    err := r.DB.First(&product, id).Error
-    if err != nil {
-        return nil, err
-    }
-    return &product, nil
-}
-
-// GetProductsByBusinessID retrieves all products belonging to a specific business
-func (r *ProductRepo) GetProductsByBusinessID(businessID uint) ([]models.Product, error) {
-    var products []models.Product
-    err := r.DB.Where("business_id = ?", businessID).Find(&products).Error
-    return products, err
+	err := db.DB.Save(&product).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
