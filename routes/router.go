@@ -11,7 +11,8 @@ func SetupRouter(userHandler *handlers.UserHandler,
 	businessHandler *handlers.BusinessHandler, 
 	clientHandler *handlers.ClientHandler, 
 	productHandler *handlers.ProductHandler,
-	invoiceHandler *handlers.InvoiceHandler,) *mux.Router {
+	invoiceHandler *handlers.InvoiceHandler,
+	pdfHandler *handlers.PDFHandler,) *mux.Router {
 	r := mux.NewRouter()
 
 	//public routes
@@ -44,6 +45,8 @@ func SetupRouter(userHandler *handlers.UserHandler,
 	protected.HandleFunc("/invoices/{invoiceID}", invoiceHandler.GetInvoiceByID).Methods("GET") // US 4.1 - Get invoice by ID
 	protected.HandleFunc("/invoices/client/{clientID}", invoiceHandler.GetInvoicesByClientID).Methods("GET") // US 2.3 - Get all invoices for a client
 	protected.HandleFunc("/invoices/{invoiceID}", invoiceHandler.UpdateInvoice).Methods("PUT") // US 4.3 - Update draft invoice
+
+	protected.HandleFunc("/invoices/{invoiceID}/pdf", pdfHandler.DownloadInvoicePDF).Methods("GET") // US 5.2 - Download invoice as PDF
 
 	return r
 

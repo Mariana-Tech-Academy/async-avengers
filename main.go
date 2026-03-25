@@ -34,9 +34,10 @@ func main() {
 	clientHandler := &handlers.ClientHandler{Service: clientService}
 	productHandler := &handlers.ProductHandler{Service: productService}
 	invoiceHandler := &handlers.InvoiceHandler{Service: invoiceService}
+	pdfHandler := &handlers.PDFHandler{ InvoiceService:  invoiceService, BusinessService: businessService, ClientService:   clientService,}
 	
 	//routes
-	r := routes.SetupRouter(userHandler, businessHandler, clientHandler, productHandler, invoiceHandler)
+	r := routes.SetupRouter(userHandler, businessHandler, clientHandler, productHandler, invoiceHandler, pdfHandler)
 
 	//start server
 	err := http.ListenAndServe(":8080", r)
