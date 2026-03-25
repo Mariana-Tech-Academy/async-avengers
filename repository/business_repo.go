@@ -1,10 +1,11 @@
 package repository
 
 import (
+	"invoiceSys/db"
 	//"invoiceSys/db"
 	"invoiceSys/models"
-	"gorm.io/gorm"
 
+	"gorm.io/gorm"
 )
 
 // Defining the database operations for business profiles
@@ -20,13 +21,13 @@ type BusinessRepo struct {
 
 // US 1.1 Create business profile - saves the new business to db
 func (r *BusinessRepo) CreateBusiness(business *models.Business) error {
-	return r.DB.Create(business).Error // // We use r.DB (the local struct field) instead of a global db.DB
+	return db.DB.Create(business).Error // // We use r.DB (the local struct field) instead of a global db.DB
 }
 
 // US 1.1 Business details appear on invoices - gets business profile by user ID
 func (r *BusinessRepo) GetBusinessByUserID(userID uint) (*models.Business, error) {
 	var business models.Business
-	err := r.DB.Where("user_id = ?", userID).First(&business).Error
+	err := db.DB.Where("user_id = ?", userID).First(&business).Error
 	if err != nil {
 		return nil, err
 	}
@@ -35,5 +36,5 @@ func (r *BusinessRepo) GetBusinessByUserID(userID uint) (*models.Business, error
 
 // US 1.2 Edit business info - saves updated business details to db
 func (r *BusinessRepo) UpdateBusiness(business *models.Business) error {
-	return r.DB.Save(business).Error
+	return db.DB.Save(business).Error
 }

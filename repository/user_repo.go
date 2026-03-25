@@ -3,7 +3,9 @@ package repository
 import (
 	//"invoiceSys/db" dependency injection using r*
 
+	"invoiceSys/db"
 	"invoiceSys/models"
+
 	"gorm.io/gorm"
 )
 
@@ -21,7 +23,7 @@ type UserRepo struct {
 
 func (r *UserRepo) GetUserByUsername(username string) (*models.User, error) {
 	var user models.User
-	err := r.DB.Where("username = ?", username).First(&user).Error
+	err := db.DB.Where("username = ?", username).First(&user).Error
 	if err != nil {
 		return &models.User{}, err
 	}
@@ -30,7 +32,7 @@ func (r *UserRepo) GetUserByUsername(username string) (*models.User, error) {
 }
 
 func (r *UserRepo) CreateUser(user *models.User) error {
-	err := r.DB.Create(&user).Error
+	err := db.DB.Create(&user).Error
 	if err != nil {
 		return err
 	}
@@ -38,6 +40,5 @@ func (r *UserRepo) CreateUser(user *models.User) error {
 }
 
 func (r *UserRepo) UpdateUser(user *models.User) error { // 1.2 update business profile
-	return r.DB.Save(user).Error
+	return db.DB.Save(user).Error
 }
-
