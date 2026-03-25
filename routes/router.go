@@ -10,7 +10,7 @@ import (
 func SetupRouter(userHandler *handlers.UserHandler, 
 	businessHandler *handlers.BusinessHandler,
 	clientHandler *handlers.ClientHandler,
-	productHandler *handlers.ProductHandler) *mux.Router {
+	productHandler *handlers.ProductHandler,) *mux.Router {
 	r := mux.NewRouter()
 
 	//public routes
@@ -34,14 +34,12 @@ func SetupRouter(userHandler *handlers.UserHandler,
 	protected.HandleFunc("/clients/user/{userID}", clientHandler.GetClientsByUserID).Methods("GET") // Get all clients for a user
 	protected.HandleFunc("/clients/{clientID}", clientHandler.UpdateClient).Methods("PUT") // Update client
 
-   // US 3 
-    protected.HandleFunc("/products", productHandler.CreateProduct).Methods("POST")// saves new product to list
-    protected.HandleFunc("/products/{id}", productHandler.UpdateProduct).Methods("PUT")//changes the price/details of specific item
-   // US 4 
+	// US 3
+	protected.HandleFunc("/products", productHandler.CreateProduct).Methods("POST") // Create product
+	protected.HandleFunc("/products/{productID}", productHandler.GetProductByID).Methods("GET") // Get product by ID
+	protected.HandleFunc("/products/user/{userID}", productHandler.GetProductsByUserID).Methods("GET") // Get all products for a use
+	protected.HandleFunc("/products/{productID}", productHandler.UpdateProduct).Methods("PUT") // Edit Product
 
-   // US 5 
-
-   // US 6 
 
 	return r
 

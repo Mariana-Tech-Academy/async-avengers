@@ -9,7 +9,6 @@ import (
 	"invoiceSys/services"
 	"log"
 	"net/http"
-	
 )
 
 func main() {
@@ -29,10 +28,10 @@ func main() {
 
 	// initialize handlers
 	userHandler := &handlers.UserHandler{Service: userService}
-    businessHandler := &handlers.BusinessHandler{Service: businessService}
-    clientHandler := &handlers.ClientHandler{Service: clientService}
-    productHandler := &handlers.ProductHandler{Service: productService}
-	
+	businessHandler := &handlers.BusinessHandler{Service: businessService}
+	clientHandler := &handlers.ClientHandler{Service: clientService}
+	productHandler := &handlers.ProductHandler{Service: productService}
+
 	//routes
 	r := routes.SetupRouter(userHandler, businessHandler, clientHandler, productHandler)
 
