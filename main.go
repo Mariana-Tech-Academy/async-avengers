@@ -8,8 +8,8 @@ import (
 	"invoiceSys/routes"
 	"invoiceSys/services"
 	"log"
+	"os"
 	"net/http"
-	
 )
 
 func main() {
@@ -29,15 +29,22 @@ func main() {
 
 	// initialize handlers
 	userHandler := &handlers.UserHandler{Service: userService}
-    businessHandler := &handlers.BusinessHandler{Service: businessService}
-    clientHandler := &handlers.ClientHandler{Service: clientService}
-    productHandler := &handlers.ProductHandler{Service: productService}
-	
+	businessHandler := &handlers.BusinessHandler{Service: businessService}
+	clientHandler := &handlers.ClientHandler{Service: clientService}
+	productHandler := &handlers.ProductHandler{Service: productService}
+
 	//routes
 	r := routes.SetupRouter(userHandler, businessHandler, clientHandler, productHandler)
 
 	//start server
-	err := http.ListenAndServe(":8080", r)
+	// Get port from environment variable for Render
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Default for local development
+	}
+
+	fmt.Printf("server started on :%s\n", port)
+	err := http.ListenAndServe(":"+port, r)
 	if err != nil {
 		log.Fatal("failed to start server", err)
 	}
