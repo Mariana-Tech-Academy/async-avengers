@@ -7,9 +7,9 @@ import (
 	"invoiceSys/repository"
 	"invoiceSys/routes"
 	"invoiceSys/services"
-	"log"
 	"net/http"
 	"os"
+	"log"
 )
 
 func main() {
@@ -41,10 +41,15 @@ func main() {
 	r := routes.SetupRouter(userHandler, businessHandler, clientHandler, productHandler, invoiceHandler, pdfHandler)
 
 	// start server
-	port := os.Getenv("PORT")
-if port == "" {
-    port = "8080"
-}
-http.ListenAndServe(":"+port, r)
-fmt.Println("server started on :8080")
-	}
+// start server
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "8080"
+    }
+
+    fmt.Printf("server started on :%s\n", port)
+    err := http.ListenAndServe(":"+port, r)
+    if err != nil {
+        log.Fatal("failed to start server", err)
+    }
+} // This is the final closing brace for func main()
