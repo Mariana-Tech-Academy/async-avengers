@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"context"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -58,11 +59,20 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-		_, err := VerifyJWT(tokenString)
+		token, err := VerifyJWT(tokenString)
 		if err != nil {
 			http.Error(w, "invalid token", http.StatusUnauthorized)
 			return
+
 		}
-		next.ServeHTTP(w, r)
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			http.Error(w, "invalid token claims", http.StatusUnauthorized)
+			return
+
+		}
+		userID := uint(claims["user_id"].(float64))
+		ctx := context.WithValue(r.Context(), "user_id", userID)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

@@ -8,8 +8,8 @@ import (
 	"invoiceSys/routes"
 	"invoiceSys/services"
 	"log"
-	"os"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -20,33 +20,31 @@ func main() {
 	businessRepo := &repository.BusinessRepo{}
 	clientRepo := &repository.ClientRepo{}
 	productRepo := &repository.ProductRepo{}
+	invoiceRepo := &repository.InvoiceRepo{}
 
-	// initialize service
+	// initialize services
 	userService := &services.UserService{Repo: userRepo}
 	businessService := &services.BusinessService{Repo: businessRepo}
 	clientService := &services.ClientService{Repo: clientRepo}
 	productService := &services.ProductService{Repo: productRepo}
+	invoiceService := &services.InvoiceService{Repo:         invoiceRepo, BusinessRepo: businessRepo, ProductRepo:  productRepo,}
 
 	// initialize handlers
 	userHandler := &handlers.UserHandler{Service: userService}
 	businessHandler := &handlers.BusinessHandler{Service: businessService}
 	clientHandler := &handlers.ClientHandler{Service: clientService}
 	productHandler := &handlers.ProductHandler{Service: productService}
+	invoiceHandler := &handlers.InvoiceHandler{Service: invoiceService, ClientService: clientService,}
+	pdfHandler := &handlers.PDFHandler{ InvoiceService:  invoiceService, BusinessService: businessService, ClientService:   clientService,}
 
 	//routes
-	r := routes.SetupRouter(userHandler, businessHandler, clientHandler, productHandler)
+	r := routes.SetupRouter(userHandler, businessHandler, clientHandler, productHandler, invoiceHandler, pdfHandler)
 
-	//start server
-	// Get port from environment variable for Render
+	// start server
 	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080" // Default for local development
-	}
-
-	fmt.Printf("server started on :%s\n", port)
-	err := http.ListenAndServe(":"+port, r)
-	if err != nil {
-		log.Fatal("failed to start server", err)
-	}
-	fmt.Println("server started on :8080")
+if port == "" {
+    port = "8080"
 }
+http.ListenAndServe(":"+port, r)
+fmt.Println("server started on :8080")
+	}

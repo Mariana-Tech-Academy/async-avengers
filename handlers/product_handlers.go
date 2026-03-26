@@ -1,61 +1,126 @@
 package handlers
 
 import (
-    "encoding/json"
-    "invoiceSys/models"
-    "invoiceSys/services"
-    "net/http"
-    "strconv"
+	"encoding/json"
+	"invoiceSys/models"
+	"invoiceSys/services"
+	"net/http"
+	"strconv"
 
-    "github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 )
 
 type ProductHandler struct {
-    Service *services.ProductService
+	Service *services.ProductService
 }
 
-// US 3.1 – Create Product or Service
+// Create Product - receives the request and creates a new product
 func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
-    var product models.Product
-    
-    // Decode the request body
-    if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
-        http.Error(w, "Invalid request payload", http.StatusBadRequest)
-        return
-    }
+	// get user ID from token instead of request body
+	userID := r.Context().Value("user_id").(uint)
 
-    // Call service layer
-    if err := h.Service.CreateProduct(&product); err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
+	var product models.Product
+	err := json.NewDecoder(r.Body).Decode(&product)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-    w.WriteHeader(http.StatusCreated)
-    json.NewEncoder(w).Encode(product)
+	// set user ID from token automatically
+	product.UserID = userID
+
+	// call service layer to save the product
+	err = h.Service.CreateProduct(&product)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// return the created product in the response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(product)
 }
 
-// US 3.2 – Edit Product or Service
+// Get product by ID - retrieves a single product
+func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	productID, err := strconv.Atoi(vars["productID"])
+	if err != nil {
+		http.Error(w, "invalid product ID", http.StatusBadRequest)
+		return
+	}
+
+	product, err := h.Service.GetProductByID(uint(productID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	// make sure product belongs to logged in user
+	userID := r.Context().Value("user_id").(uint)
+	if product.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(product)
+}
+
+// Get all products - retrieves all products for a business owner
+func (h *ProductHandler) GetProductsByUserID(w http.ResponseWriter, r *http.Request) {
+	// get user ID from token instead of URL
+	userID := r.Context().Value("user_id").(uint)
+
+	products, err := h.Service.GetProductsByUserID(uint(userID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(products)
+}
+
+// Edit Product - receives the request and updates product details
 func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
-    // Get product ID from URL params (e.g., /products/{id})
-    vars := mux.Vars(r)
-    id, err := strconv.Atoi(vars["id"])
-    if err != nil {
-        http.Error(w, "Invalid product ID", http.StatusBadRequest)
-        return
-    }
+	vars := mux.Vars(r)
+	productID, err := strconv.Atoi(vars["productID"])
+	if err != nil {
+		http.Error(w, "invalid product ID", http.StatusBadRequest)
+		return
+	}
 
-    var updatedData models.Product
-    if err := json.NewDecoder(r.Body).Decode(&updatedData); err != nil {
-        http.Error(w, "Invalid request payload", http.StatusBadRequest)
-        return
-    }
+	// collect updated product details from rb
+	var updated models.Product
+	err = json.NewDecoder(r.Body).Decode(&updated)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-    // Call service layer to handle the "Fetch -> Update -> Save" logic
-    if err := h.Service.UpdateProduct(uint(id), &updatedData); err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
+	// make sure product belongs to logged in user
+	userID := r.Context().Value("user_id").(uint)
+	product, err := h.Service.GetProductByID(uint(productID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	if product.UserID != userID {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+	err = h.Service.UpdateProduct(uint(productID), &updated)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-    w.WriteHeader(http.StatusOK)
-    json.NewEncoder(w).Encode(map[string]string{"message": "Product updated successfully"})
+	// return the updated product
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(updated)
 }

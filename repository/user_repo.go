@@ -1,10 +1,8 @@
 package repository
 
 import (
-	//"invoiceSys/db" dependency injection using r*
-
+	"invoiceSys/db"
 	"invoiceSys/models"
-	"gorm.io/gorm"
 )
 
 type UserRepository interface {
@@ -13,24 +11,20 @@ type UserRepository interface {
 	UpdateUser(user *models.User) error
 }
 
-type UserRepo struct {
-	DB *gorm.DB
-}
+type UserRepo struct{}
 
 // Handler layer-------->services layer-------->repository layer(db methods)
-
 func (r *UserRepo) GetUserByUsername(username string) (*models.User, error) {
 	var user models.User
-	err := r.DB.Where("username = ?", username).First(&user).Error
+	err := db.DB.Where("username = ?", username).First(&user).Error
 	if err != nil {
 		return &models.User{}, err
 	}
-
 	return &user, nil
 }
 
 func (r *UserRepo) CreateUser(user *models.User) error {
-	err := r.DB.Create(&user).Error
+	err := db.DB.Create(&user).Error
 	if err != nil {
 		return err
 	}
@@ -38,6 +32,5 @@ func (r *UserRepo) CreateUser(user *models.User) error {
 }
 
 func (r *UserRepo) UpdateUser(user *models.User) error { // 1.2 update business profile
-	return r.DB.Save(user).Error
+	return db.DB.Save(user).Error
 }
-
