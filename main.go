@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/rs/cors"
 	"invoiceSys/db"
 	"invoiceSys/handlers"
 	"invoiceSys/repository"
@@ -11,6 +10,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -51,7 +52,7 @@ func main() {
 	// Create the CORS handler
 	c := cors.New(cors.Options{
 		// Allowing your React dev server and your live Render URL
-		AllowedOrigins: []string{"http://localhost:5173", "https://async-avengers.onrender.com","https://async-avengers-frontend.onrender.com"},
+		AllowedOrigins:   []string{"http://localhost:5173", "https://async-avengers.onrender.com", "https://async-avengers-frontend.onrender.com"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
