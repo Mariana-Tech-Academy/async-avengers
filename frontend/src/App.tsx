@@ -23,7 +23,7 @@ function App() {
       const bizRes = await api.get('/business');
       setBusiness(bizRes.data);
     } catch (err) {
-      alert("Login failed! Check console.");
+      alert("Login failed!");
     }
   };
 
