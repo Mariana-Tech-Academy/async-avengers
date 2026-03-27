@@ -72,7 +72,7 @@ function App() {
         </div>
       ) : (
         <div>
-          <h2>Welcome, {business.buisnessname}</h2>
+          <h2>Welcome, {business.name}</h2>
           <pre>{JSON.stringify(business, null, 2)}</pre>
         </div>
       )}
