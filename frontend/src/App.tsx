@@ -12,7 +12,7 @@ function App() {
       // 1. Call the login route
       const res = await api.post('/login', { email, password });
       console.log("Login response:", res.data);
-      const token = res.data.token;
+      const token = res.data;
       console.log("Token:", token);
 
       // 2. Save token to LocalStorage
