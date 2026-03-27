@@ -10,8 +10,8 @@ function CreateBusiness({ onCreated }: { onCreated: (b: any) => void }) {
     e.preventDefault();
     try {
       const res = await api.post('/business', {
-        buisnessname: name,
-        buisnessaddress: address,
+        name: name,
+        address: address,
         phone: phone,
       });
       onCreated(res.data);
@@ -26,6 +26,44 @@ function CreateBusiness({ onCreated }: { onCreated: (b: any) => void }) {
       <input type="text" placeholder="Address" onChange={e => setAddress(e.target.value)} />
       <input type="text" placeholder="Phone" onChange={e => setPhone(e.target.value)} />
       <button type="submit">Create Business</button>
+    </form>
+  );
+}
+
+function EditBusiness({ business, onUpdated }: { business: any, onUpdated: (b: any) => void }) {
+  const [name, setName] = useState(business.name || "");
+  const [address, setAddress] = useState(business.address || "");
+  const [phone, setPhone] = useState(business.phone || "");
+  const [editing, setEditing] = useState(false);
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await api.put('/business', {
+        name: name,
+        address: address,
+        phone: phone,
+      });
+      onUpdated(res.data);
+      setEditing(false);
+    } catch (err) {
+      alert("Failed to update business!");
+    }
+  };
+
+  if (!editing) {
+    return (
+      <button onClick={() => setEditing(true)}>Edit Business</button>
+    );
+  }
+
+  return (
+    <form onSubmit={handleUpdate}>
+      <input type="text" placeholder="Business Name" value={name} onChange={e => setName(e.target.value)} />
+      <input type="text" placeholder="Address" value={address} onChange={e => setAddress(e.target.value)} />
+      <input type="text" placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} />
+      <button type="submit">Save Changes</button>
+      <button type="button" onClick={() => setEditing(false)}>Cancel</button>
     </form>
   );
 }
@@ -73,7 +111,9 @@ function App() {
       ) : (
         <div>
           <h2>Welcome, {business.name}</h2>
-          <pre>{JSON.stringify(business, null, 2)}</pre>
+          <p>Address: {business.address}</p>
+          <p>Phone: {business.phone}</p>
+          <EditBusiness business={business} onUpdated={setBusiness} />
         </div>
       )}
     </div>
