@@ -11,11 +11,13 @@ function App() {
     try {
       // 1. Call the login route
       const res = await api.post('/login', { email, password });
+      console.log("Login response:", res.data);
       const token = res.data.token;
+      console.log("Token:", token);
 
       // 2. Save token to LocalStorage
       localStorage.setItem("token", token);
-      
+
       // 3. Tell axios to use this token for all future calls
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
