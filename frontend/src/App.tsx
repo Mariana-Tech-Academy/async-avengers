@@ -9,21 +9,19 @@ function App() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // 1. Call the login route
       const res = await api.post('/login', { email, password });
-      console.log("Login response:", res.data);
       const token = res.data;
-      console.log("Token:", token);
-
-      // 2. Save token to LocalStorage
       localStorage.setItem("token", token);
-
-      // 3. Tell axios to use this token for all future calls
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      // 4. Now try to get the protected data
-      const bizRes = await api.get('/business');
-      setBusiness(bizRes.data);
+      try {
+        const bizRes = await api.get('/business');
+        setBusiness(bizRes.data);
+      } catch (err: any) {
+        if (err.response?.status === 404) {
+          setBusiness("none");
+        }
+      }
     } catch (err) {
       alert("Login failed!");
     }
@@ -38,6 +36,10 @@ function App() {
           <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
           <button type="submit">Login</button>
         </form>
+      ) : business === "none" ? (
+        <div>
+          <h2>No business yet — create one!</h2>
+        </div>
       ) : (
         <div>
           <h2>Welcome, {business.name}</h2>
