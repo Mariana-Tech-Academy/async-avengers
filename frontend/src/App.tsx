@@ -16,12 +16,15 @@ interface Product {
   ID: number; name: string; description: string; price: number; unit: string;
 }
 interface Invoice {
-  ID: number; client_id: number; status: string; total: number;
+  ID: number; client_id: number; status: string;
+  invoice_number: string;
+  subtotal: number; tax_rate: number; tax_amount: number; total_amount: number;
   CreatedAt: string; due_date: string; notes: string;
   items?: InvoiceItem[];
 }
 interface InvoiceItem {
-  product_id: number; quantity: number; price: number;
+  ID: number; product_id: number; name: string; description: string;
+  quantity: number; unit_price: number; total: number;
 }
 
 // ─── Global Styles ────────────────────────────────────────────────────────────
@@ -693,15 +696,17 @@ function InvoicesSection() {
       ) : (
         <div className="table-wrap">
           <table>
-            <thead><tr><th>#</th><th>Client</th><th>Status</th><th>Date</th><th>Total</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Invoice #</th><th>Client</th><th>Status</th><th>Date</th><th>Subtotal</th><th>Tax</th><th>Total</th><th>Actions</th></tr></thead>
             <tbody>
               {invoices.map(inv => (
                 <tr key={inv.ID}>
-                  <td style={{ fontWeight: 700, color: 'var(--purple-soft)' }}>#{inv.ID}</td>
+                  <td style={{ fontWeight: 700, color: 'var(--purple-soft)' }}>{inv.invoice_number || `#${inv.ID}`}</td>
                   <td>{getClientName(inv.client_id)}</td>
                   <td>{statusBadge(inv.status)}</td>
                   <td style={{ color: 'var(--text2)' }}>{inv.CreatedAt ? new Date(inv.CreatedAt).toLocaleDateString() : '—'}</td>
-                  <td style={{ fontWeight: 700 }}>{fmt(inv.total)}</td>
+                  <td>{fmt(inv.subtotal)}</td>
+                  <td>{fmt(inv.tax_amount)}</td>
+                  <td style={{ fontWeight: 700 }}>{fmt(inv.total_amount)}</td>
                   <td>
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button className="btn btn-ghost btn-sm" onClick={() => setSelected(inv)}>👁️ View</button>
@@ -769,14 +774,54 @@ function InvoicesSection() {
 
       {/* View Invoice Modal */}
       {selected && (
-        <Modal title={`🧾 Invoice #${selected.ID}`} onClose={() => setSelected(null)}>
+        <Modal title={`🧾 Invoice #${selected.invoice_number || selected.ID}`} onClose={() => setSelected(null)}>
           <div className="invoice-detail-grid">
             <div className="detail-field"><label>Client</label><p>{getClientName(selected.client_id)}</p></div>
             <div className="detail-field"><label>Status</label><p>{statusBadge(selected.status)}</p></div>
             <div className="detail-field"><label>Date</label><p>{selected.CreatedAt ? new Date(selected.CreatedAt).toLocaleDateString() : '—'}</p></div>
-            <div className="detail-field"><label>Total</label><p style={{ fontWeight: 700, color: 'var(--purple-soft)' }}>{fmt(selected.total)}</p></div>
+            <div className="detail-field"><label>Invoice #</label><p style={{ color: 'var(--purple-soft)', fontWeight: 700 }}>{selected.invoice_number || `#${selected.ID}`}</p></div>
           </div>
           {selected.notes && <div className="detail-field" style={{ marginBottom: 16 }}><label>Notes</label><p>{selected.notes}</p></div>}
+
+          {/* Line Items */}
+          {selected.items && selected.items.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>🛒 Line Items</label>
+              <div className="table-wrap">
+                <table>
+                  <thead><tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+                  <tbody>
+                    {selected.items.map((item, i) => (
+                      <tr key={i}>
+                        <td><div style={{ fontWeight: 600 }}>{item.name}</div><div style={{ fontSize: 12, color: 'var(--text2)' }}>{item.description}</div></td>
+                        <td>{item.quantity}</td>
+                        <td>{fmt(item.unit_price)}</td>
+                        <td style={{ fontWeight: 700 }}>{fmt(item.total)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Totals breakdown */}
+          <div style={{ background: 'var(--card2)', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ color: 'var(--text2)' }}>Subtotal</span>
+              <span>{fmt(selected.subtotal)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+              <span style={{ color: 'var(--text2)' }}>Tax ({selected.tax_rate}%)</span>
+              <span>{fmt(selected.tax_amount)}</span>
+            </div>
+            <hr className="divider" style={{ margin: '8px 0' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontWeight: 700, fontSize: 16 }}>Total</span>
+              <span style={{ fontWeight: 800, fontSize: 16, color: 'var(--purple-soft)' }}>{fmt(selected.total_amount)}</span>
+            </div>
+          </div>
+
           <hr className="divider" />
           <div style={{ marginBottom: 16 }}>
             <label style={{ fontSize: 12, fontWeight: 700, color: 'var(--text2)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 8 }}>Update Status</label>
@@ -807,7 +852,7 @@ function Dashboard({ business, onNavigate }: { business: Business | null; onNavi
       api.get('/invoices/user').catch(() => ({ data: [] })),
     ]).then(([c, p, i]) => {
       const invs = i.data || [];
-      const revenue = invs.filter((inv: Invoice) => inv.status === 'paid').reduce((sum: number, inv: Invoice) => sum + (inv.total || 0), 0);
+      const revenue = invs.filter((inv: Invoice) => inv.status === 'paid').reduce((sum: number, inv: Invoice) => sum + (inv.total_amount || 0), 0);
       setStats({ clients: (c.data || []).length, products: (p.data || []).length, invoices: invs.length, revenue });
     });
   }, []);
