@@ -1,8 +1,10 @@
 package routes
 
 import (
+	"fmt"
 	"invoiceSys/handlers"
 	"invoiceSys/middleware"
+	"net/http"
 
 	"github.com/gorilla/mux"
 )
@@ -14,6 +16,10 @@ func SetupRouter(userHandler *handlers.UserHandler,
 	invoiceHandler *handlers.InvoiceHandler,
 	pdfHandler *handlers.PDFHandler) *mux.Router {
 	r := mux.NewRouter()
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "Backend is working!")
+	}).Methods("GET")
 
 	//public routes
 	r.HandleFunc("/login", userHandler.Login).Methods("POST")
